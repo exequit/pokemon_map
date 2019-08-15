@@ -23,7 +23,7 @@ class Pokemon(models.Model):
     image = models.ImageField('Картинка', blank=True, null=True)
     element_type = models.ManyToManyField(PokemonElementType, blank=True)
     previous_evolution = models.ForeignKey(
-        "Pokemon", on_delete=models.CASCADE, verbose_name='Из кого эволюционировал',
+        "Pokemon", on_delete=models.SET_NULL, verbose_name='Из кого эволюционировал',
         blank=True, null=True, related_name="next_evolution")
 
     def __str__(self):
@@ -35,7 +35,7 @@ class Pokemon(models.Model):
 class PokemonEntity(models.Model):
     '''model Pokemon entity'''
     pokemon = models.ForeignKey(
-        Pokemon, verbose_name='Покемон', on_delete=models.CASCADE)
+        Pokemon, verbose_name='Покемон', on_delete=models.PROTECT)
     latitude = models.FloatField('Ширина')
     longitude = models.FloatField('Долгота')
     appear_at = models.DateTimeField('Появится в', blank=True, default=None)
