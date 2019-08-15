@@ -31,9 +31,6 @@ def add_pokemon(folium_map, pokemon_entity):
 
 def show_all_pokemons(request):
     '''return dictionary about all pokemons with short information'''
-    with open("pokemon_entities/pokemons.json") as database:
-        pokemons = json.load(database)['pokemons']
-
     pokemon_entities = PokemonEntity.objects.filter(
         appear_at__lte=timezone.now(), disappear_at__gte=timezone.now())
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
@@ -73,27 +70,30 @@ def show_pokemon(request, pokemon_id):
         add_pokemon(folium_map, pokemon_entity)
 
     if requested_pokemon.previous_evolution:
+        requested_previous_evolution = requested_pokemon.previous_evolution
         previous_evolution = {
-            'pokemon_id': requested_pokemon.previous_evolution.id,
-            'img_url': requested_pokemon.previous_evolution.image.url if requested_pokemon.previous_evolution.image else None,
-            'title_ru': requested_pokemon.previous_evolution.title, }
+            'pokemon_id': requested_previous_evolution.id,
+            'img_url': requested_previous_evolution.image.url if requested_previous_evolution.image else None,
+            'title_ru': requested_previous_evolution.title, }
+
     if requested_pokemon.next_evolution.all():
+        requested_next_evolution = requested_pokemon.next_evolution.get()
         next_evolution = {
-            'pokemon_id': requested_pokemon.next_evolution.get().id,
-            'img_url': requested_pokemon.next_evolution.get().image.url if requested_pokemon.next_evolution.get().image else None,
-            'title_ru': requested_pokemon.next_evolution.get().title, }
+            'pokemon_id': requested_next_evolution.id,
+            'img_url': requested_next_evolution.image.url if requested_next_evolution.image else None,
+            'title_ru': requested_next_evolution.title, }
     if requested_pokemon.element_type:
         element_type = []
         for element in requested_pokemon.element_type.all():
             element_type.append({'title': element.title,
-                                 'img': element.image.url if element.image.url else None, 
-                                 'strong_against': element.strong_against.all(),})
+                                 'img': element.image.url if element.image.url else None,
+                                 'strong_against': element.strong_against.all(), })
     pokemon_on_page = {
         'pokemon_id': requested_pokemon.id,
         'title_ru': requested_pokemon.title,
-        'title_en': requested_pokemon.title_en if requested_pokemon.title_en else '',
-        'title_jp': requested_pokemon.title_jp if requested_pokemon.title_jp else '',
-        'description': requested_pokemon.description if requested_pokemon.description else '',
+        'title_en': requested_pokemon.title_en,
+        'title_jp': requested_pokemon.title_jp,
+        'description': requested_pokemon.description,
         'img_url': requested_pokemon.image.url if requested_pokemon.image else None,
         'previous_evolution': previous_evolution,
         'next_evolution': next_evolution,
