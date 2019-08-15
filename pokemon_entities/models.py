@@ -21,7 +21,7 @@ class Pokemon(models.Model):
         'Имя (яп.)', max_length=200, blank=True, default="")
     description = models.TextField('Описание', blank=True, default="")
     image = models.ImageField('Картинка', blank=True, null=True)
-    element_type = models.ManyToManyField(PokemonElementType)
+    element_type = models.ManyToManyField(PokemonElementType, blank=True)
     previous_evolution = models.ForeignKey(
         "Pokemon", on_delete=models.CASCADE, verbose_name='Из кого эволюционировал',
         blank=True, null=True, related_name="next_evolution")
@@ -38,13 +38,13 @@ class PokemonEntity(models.Model):
         Pokemon, verbose_name='Покемон', on_delete=models.CASCADE)
     latitude = models.FloatField('Ширина')
     longitude = models.FloatField('Долгота')
-    appear_at = models.DateTimeField('Появится в', default=None)
-    disappear_at = models.DateTimeField('Пропадет в', default=None)
-    level = models.IntegerField('Уровень', default=None)
-    health = models.IntegerField('Здоровье', default=None)
-    strength = models.IntegerField('Атака', default=None)
-    defence = models.IntegerField('Защита', default=None)
-    stamina = models.IntegerField('Выносливость', default=None)
+    appear_at = models.DateTimeField('Появится в', blank=True, default=None)
+    disappear_at = models.DateTimeField('Пропадет в', blank=True, default=None)
+    level = models.IntegerField('Уровень', blank=True, default=0)
+    health = models.IntegerField('Здоровье', blank=True, default=0)
+    strength = models.IntegerField('Атака', blank=True, default=0)
+    defence = models.IntegerField('Защита', blank=True, default=0)
+    stamina = models.IntegerField('Выносливость', blank=True, default=0)
 
     def __str__(self):
         return "{pok}({lat};{lon})".format(
