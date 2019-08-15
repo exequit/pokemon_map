@@ -16,10 +16,10 @@ class Pokemon(models.Model):
     '''Pokemon model'''
     title = models.CharField('Имя', max_length=200)
     title_en = models.CharField(
-        'Имя (англ.)', max_length=200, blank=True, null=True)
+        'Имя (англ.)', max_length=200, blank=True, default="")
     title_jp = models.CharField(
-        'Имя (яп.)', max_length=200, blank=True, null=True)
-    description = models.TextField('Описание', blank=True, null=True)
+        'Имя (яп.)', max_length=200, blank=True, default="")
+    description = models.TextField('Описание', blank=True, default="")
     image = models.ImageField('Картинка', blank=True, null=True)
     element_type = models.ManyToManyField(PokemonElementType)
     previous_evolution = models.ForeignKey(
