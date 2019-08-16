@@ -2,6 +2,19 @@ from django.db import models
 
 
 class PokemonElementType(models.Model):
+    '''The Pokemon object contains a lot of pokemons
+    
+        Parameters:
+
+        Attributes:
+            title (CharField): name of element type
+            image (ImageField): image of element
+            strong_against (ManyToManyField: PokemonElementType): element against which this is effective 
+
+        Methods:
+
+    '''
+
     title = models.CharField('Название', max_length=200)
     image = models.ImageField('Картинка', blank=True,
                               null=True, upload_to="elements")
@@ -12,8 +25,24 @@ class PokemonElementType(models.Model):
         return "{title}".format(title=self.title)
 
 
+
 class Pokemon(models.Model):
-    '''Pokemon model'''
+    '''The Pokemon object contains a lot of pokemons
+    
+    Parameters:
+
+    Attributes:
+        title (CharField): name of pokemon in russian
+        title_en (CharField): name of pokemon in english 
+        title_jp (CharField): name of pokemon in japan
+        description (TextField): description of pokemon
+        image (ImageField): image of pokemon
+        element_type (ManyToManyField: PokemonElementType): element types which pokemon has   
+        previous_evolution (ForeignKey: Pokemon): pokemon from which current pokemon evolve           
+    
+    Methods:
+
+    '''
     title = models.CharField('Имя', max_length=200)
     title_en = models.CharField(
         'Имя (англ.)', max_length=200, blank=True, default="")
@@ -33,7 +62,26 @@ class Pokemon(models.Model):
 
 
 class PokemonEntity(models.Model):
-    '''model Pokemon entity'''
+    '''The Pokemon entity object contains a lot of pokemon entities
+    
+    Parameters:
+
+    Attributes:
+        pokemon (ForeignKey: Pokemon): current pokemon 
+        latitude (FloatField): lantitude of pokemone  
+        longitude (FloatField): longtitude of pokemon
+        appear_at (DateTimeField): date and time when pokemon appear
+        disappear_at (DateTimeField): date and time when pokemon disappear
+        level (IntegerField): level of pokemon
+        health (IntegerField): health of pokemon
+        strength (IntegerField): strength of pokemon
+        defence (IntegerField): defence of pokemon
+        stamina (IntegerField): stamina of pokemon
+
+    Methods:
+
+    '''
+
     pokemon = models.ForeignKey(
         Pokemon, verbose_name='Покемон', on_delete=models.PROTECT)
     latitude = models.FloatField('Ширина')
