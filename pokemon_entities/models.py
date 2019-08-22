@@ -2,18 +2,15 @@ from django.db import models
 
 
 class PokemonElementType(models.Model):
-    '''The Pokemon object contains a lot of pokemons
-    
-        Parameters:
+    """The PokemonElementType object contains pokemon element types and their characteristic features.
 
-        Attributes:
-            title (CharField): name of element type
-            image (ImageField): image of element
-            strong_against (ManyToManyField: PokemonElementType): element against which this is effective 
+    The PokemonElementType model uses for containing pokemon element types with their features like name, 
+    image and info about which element which elements (may be zero, one or greater then one) this element 
+    is strong against.
 
-        Methods:
-
-    '''
+    To create pokemon element type you can use this example:
+    > PokemonElementType.objects.create(title="Normal") 
+    """
 
     title = models.CharField('Название', max_length=200)
     image = models.ImageField('Картинка', blank=True,
@@ -25,24 +22,19 @@ class PokemonElementType(models.Model):
         return "{title}".format(title=self.title)
 
 
-
 class Pokemon(models.Model):
-    '''The Pokemon object contains a lot of pokemons
-    
-    Parameters:
+    """The Pokemon object contains pokemon species and characteristic features of pokemon.
 
-    Attributes:
-        title (CharField): name of pokemon in russian
-        title_en (CharField): name of pokemon in english 
-        title_jp (CharField): name of pokemon in japan
-        description (TextField): description of pokemon
-        image (ImageField): image of pokemon
-        element_type (ManyToManyField: PokemonElementType): element types which pokemon has   
-        previous_evolution (ForeignKey: Pokemon): pokemon from which current pokemon evolve           
-    
-    Methods:
+    The Pokemon model uses for containing pokemon species with their features like name, image, 
+    common description, previous and next evolution stage, pokemon element types.
+    The Pokemon model is in relative with PokemonEntity model and PokemonElementtype model
+    respectively by field previous_evolution and field element type. The next evolution is getting
+    from previous evolution of Pokemon object. The Pokemon object may have many element types.   
 
-    '''
+    To create new pokemon specie you can use this example:
+    > Pokemon.objects.create(title="Pikachu")
+    """
+
     title = models.CharField('Имя', max_length=200)
     title_en = models.CharField(
         'Имя (англ.)', max_length=200, blank=True, default="")
@@ -62,32 +54,26 @@ class Pokemon(models.Model):
 
 
 class PokemonEntity(models.Model):
-    '''The Pokemon entity object contains a lot of pokemon entities
-    
-    Parameters:
+    """The PokemonEntity object contains pokemons entities and their characteristic features.
 
-    Attributes:
-        pokemon (ForeignKey: Pokemon): current pokemon 
-        latitude (FloatField): lantitude of pokemone  
-        longitude (FloatField): longtitude of pokemon
-        appear_at (DateTimeField): date and time when pokemon appear
-        disappear_at (DateTimeField): date and time when pokemon disappear
-        level (IntegerField): level of pokemon
-        health (IntegerField): health of pokemon
-        strength (IntegerField): strength of pokemon
-        defence (IntegerField): defence of pokemon
-        stamina (IntegerField): stamina of pokemon
+    The PokemonEntity model uses for containing existing pokemon entities with their features 
+    like coordinates in map, appear and disappear datetime, level, health,strength, defence,
+    stamina for current pokemon entity. The PokemonEntity model is in relative with Pokemon model
+    by field pokemon and uses Pokemon object for specifing pokemon specie with current entity. 
 
-    Methods:
-
-    '''
+    To create new pokemon entity you can use this example:
+    > current_pokemon = Pokemon.objects.get(title="Pikachu")
+    > PokemonEntity.objects.create(pokemon=current_pokemon,latitude=55.5,longitude=37.6)
+    """
 
     pokemon = models.ForeignKey(
         Pokemon, verbose_name='Покемон', on_delete=models.PROTECT)
     latitude = models.FloatField('Ширина')
     longitude = models.FloatField('Долгота')
-    appear_at = models.DateTimeField('Появится в', blank=True, default=None)
-    disappear_at = models.DateTimeField('Пропадет в', blank=True, default=None)
+    appear_at = models.DateTimeField(
+        'Появится в', blank=True, default=None, null=True)
+    disappear_at = models.DateTimeField(
+        'Пропадет в', blank=True, default=None, null=True)
     level = models.IntegerField('Уровень', blank=True, default=0)
     health = models.IntegerField('Здоровье', blank=True, default=0)
     strength = models.IntegerField('Атака', blank=True, default=0)

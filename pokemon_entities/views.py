@@ -13,12 +13,30 @@ DEFAULT_IMAGE_URL = "https://vignette.wikia.nocookie.net/pokemon/images/6/6e/%21
 
 
 def add_pokemon(folium_map, pokemon_entity_info, image_url=DEFAULT_IMAGE_URL):
-    if pokemon['level']:
-        popup_message = 'Ур: {0}<br/>Зд: {1}<br/>Сил:{2}<br/>Защ:{3}<br/>Вын:{4}'.format(
+    """Add pokemon entities and popups about them to the map.
+
+    The function form the map in which add pokemon info. Info contain image 
+    with tooltip and popup message. If pokemon entity have not feature level, 
+    then popup message is 'no data'.    
+
+    :param folium_map: name of schoolkid 
+    :type: Folium.Map object
+    :param pokemon_entity_info: list of main features of pokemon entity
+    :type: list
+    :param image_url: path to image of pokemon specie
+    :type: string
+    """
+    if pokemon_entity_info['level']:
+        popup_message = '<table><tr><td>Ур:</td><td>{0}</td></tr> \
+            <tr><td>Зд:</td><td>{1}</td></tr> \
+            <tr><td>Сил:</td><td>{2}</td></tr> \
+            <tr><td>Защ:</td><td>{3}</td></tr> \
+            <tr><td>Вын:</td><td>{4}</td></tr></table>'.format(
             pokemon_entity_info['level'], pokemon_entity_info['health'], pokemon_entity_info['strength'],
             pokemon_entity_info['defence'], pokemon_entity_info['stamina'])
     else:
         popup_message = 'Нет данных'
+
     icon = folium.features.CustomIcon(
         image_url,
         icon_size=(50, 50),
@@ -32,7 +50,17 @@ def add_pokemon(folium_map, pokemon_entity_info, image_url=DEFAULT_IMAGE_URL):
 
 
 def show_all_pokemons(request):
-    '''return dictionary about all pokemons with short information'''
+    """Give information about all pokemon and active pokemon entities.
+
+    The function get info about all pokemons in DB, get and add all active pokemon entities in the map. 
+    Active means current time that between appear_at and disappear_at of pokemon entity. After that 
+    function form data for render function which show this data    
+
+    :param request: 
+    :type: HttpRequest
+    :return: result of applying the render function (html with current context)
+    :type: HttpResponse
+    """
     pokemons_on_page = []
     pokemons = Pokemon.objects.all()
     pokemon_entities = PokemonEntity.objects.filter(
@@ -51,7 +79,7 @@ def show_all_pokemons(request):
             'stamina': pokemon_entity.stamina,
         }
         add_pokemon(folium_map, pokemon_entity_info,
-                    pokemon_entity.pokemon.image_url)
+                    pokemon_entity.pokemon.image.path)
 
     for pokemon in pokemons:
         pokemons_on_page.append({
@@ -67,7 +95,19 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    '''return dictionary about current pokemon with information'''
+    """Give information about pokemon with current id and his active pokemon entities.
+
+    The function get info about current pokemon(with current id), get and add all active pokemon entities 
+    in the map. Active means current time that between appear_at and disappear_at of pokemon entity. 
+    After that function do data for render function which show this data    
+
+    :param request: 
+    :type: HttpRequest
+    :param pokemon_id: id of pokemon by which the function get current pokemon 
+    :type: int
+    :return: result of applying the render function (html with current context)
+    :type: HttpResponse
+    """
     previous_evolution = None
     next_evolution = None
 
@@ -84,7 +124,7 @@ def show_pokemon(request, pokemon_id):
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon_entity in requested_pokemon_entities:
         pokemon_entity_info = {
-            'title': requested_pokemon.pokemon.title,
+            'title': requested_pokemon.title,
             'latitude': pokemon_entity.latitude,
             'longitude': pokemon_entity.longitude,
             'level': pokemon_entity.level,
@@ -94,7 +134,7 @@ def show_pokemon(request, pokemon_id):
             'stamina': pokemon_entity.stamina,
         }
         add_pokemon(folium_map, pokemon_entity_info,
-                    requested_pokemon.image_url)
+                    requested_pokemon.image.path)
 
     if requested_pokemon.previous_evolution:
         requested_previous_evolution = requested_pokemon.previous_evolution
